@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>岐黄青年说 - 传承千年养生智慧</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">☯</span>
+                <span class="logo-text">岐黄青年说</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">首页</a>
+                <a href="#knowledge" class="nav-link">养生宝典</a>
+                <a href="#graph" class="nav-link">知识图谱</a>
+                <a href="#about" class="nav-link">关于我们</a>
+            </div>
+            <div class="nav-actions">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索养生知识...">
+                    <button onclick="performSearch()">🔍</button>
+                </div>
+                {% if user_logged_in %}
+                    <a href="/logout" class="btn-logout">退出</a>
+                {% else %}
+                    <a href="/login" class="btn-login">登录</a>
+                    <a href="/register" class="btn-register">注册</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-line1">传承千年养生智慧</span>
+                <span class="title-line2">构建青年健康未来</span>
+            </h1>
+            <p class="hero-subtitle">非遗传承视角下的大学生养生知识图谱</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ knowledges|length }}</span>
+                    <span class="stat-label">养生秘籍</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5000+</span>
+                    <span class="stat-label">青年用户</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">10+</span>
+                    <span class="stat-label">传承流派</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-decoration">
+            <div class="floating-symbol" style="--delay: 0s;">☯</div>
+            <div class="floating-symbol" style="--delay: 1s;">🍃</div>
+            <div class="floating-symbol" style="--delay: 2s;">🏮</div>
+        </div>
+    </section>
+
+    <!-- 个性化推荐 -->
+    {% if recommendations %}
+    <section class="recommendations">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-decorator">◈</span>
+                为您推荐
+                <span class="title-decorator">◈</span>
+            </h2>
+            <div class="card-grid">
+                {% for item in recommendations %}
+                <div class="knowledge-card" onclick="showKnowledgeDetail({{ item.id }})">
+                    <div class="card-header">
+                        <span class="category-tag">{{ item.category }}</span>
+                        <span class="season-tag">{{ item.season }}</span>
+                    </div>
+                    <h3 class="card-title">{{ item.title }}</h3>
+                    <p class="card-content">{{ item.content[:80] }}...</p>
+                    <div class="card-footer">
+                        <span class="view-count">👁 {{ item.view_count }}</span>
+                        <span class="learn-more">了解更多 →</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- 知识分类 -->
+    <section id="knowledge" class="knowledge-categories">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-decorator">◈</span>
+                养生宝典
+                <span class="title-decorator">◈</span>
+            </h2>
+            <div class="category-tabs">
+                <button class="tab-btn active" onclick="filterByCategory('all')">全部</button>
+                <button class="tab-btn" onclick="filterByCategory('传统功法')">传统功法</button>
+                <button class="tab-btn" onclick="filterByCategory('中医疗法')">中医疗法</button>
+                <button class="tab-btn" onclick="filterByCategory('饮食养生')">饮食养生</button>
+            </div>
+            <div class="knowledge-grid" id="knowledgeGrid">
+                {% for item in knowledges %}
+                <div class="knowledge-item" data-category="{{ item.category }}">
+                    <div class="item-icon">
+                        {% if item.category == '传统功法' %}🥋
+                        {% elif item.category == '中医疗法' %}🌿
+                        {% else %}🍵{% endif %}
+                    </div>
+                    <h4>{{ item.title }}</h4>
+                    <p class="item-desc">{{ item.benefits }}</p>
+                    <button class="btn-detail" onclick="showKnowledgeDetail({{ item.id }})">
+                        查看详情
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- 知识图谱可视化 -->
+    <section id="graph" class="knowledge-graph">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-decorator">◈</span>
+                知识图谱
+                <span class="title-decorator">◈</span>
+            </h2>
+            <div class="graph-container">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- 热门内容 -->
+    <section class="popular-content">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-decorator">◈</span>
+                热门养生
+                <span class="title-decorator">◈</span>
+            </h2>
+            <div class="popular-grid">
+                {% for item in popular %}
+                <div class="popular-card">
+                    <span class="rank-badge">{{ loop.index }}</span>
+                    <div class="popular-info">
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.suitable_crowd }}</p>
+                    </div>
+                    <span class="hot-indicator">🔥 {{ item.view_count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h5>岐黄青年说</h5>
+                <p>传承中医药文化，守护青年健康</p>
+            </div>
+            <div class="footer-section">
+                <h5>快速链接</h5>
+                <a href="#knowledge">养生知识</a>
+                <a href="#graph">知识图谱</a>
+                <a href="/login">用户中心</a>
+            </div>
+            <div class="footer-section">
+                <h5>联系我们</h5>
+                <p>邮箱：qihuang@youth.com</p>
+                <p>传承热线：400-888-9999</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 岐黄青年说 - 让养生回归生活</p>
+        </div>
+    </footer>
+
+    <!-- 知识详情弹窗 -->
+    <div id="knowledgeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalBody">
+                <!-- 动态加载内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 搜索结果弹窗 -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSearchModal()">&times;</span>
+            <h3>搜索结果</h3>
+            <div id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Flash消息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

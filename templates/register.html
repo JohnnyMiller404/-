@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 岐黄青年说</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <div class="logo-section">
+                    <span class="logo-icon">☯</span>
+                    <h1>岐黄青年说</h1>
+                    <p class="tagline">加入我们，开启养生之旅</p>
+                </div>
+            </div>
+            
+            <form class="auth-form" method="POST" action="/register">
+                <h2 class="form-title">注册账号</h2>
+                
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="请输入用户名（3-20个字符）" 
+                           minlength="3" maxlength="20">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="请输入您的邮箱地址">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="请设置密码（至少6位）" 
+                           minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">确认密码</label>
+                    <input type="password" id="confirm-password" required 
+                           placeholder="请再次输入密码"
+                           onchange="validatePassword()">
+                    <span id="password-error" class="error-message"></span>
+                </div>
+                
+                <div class="form-checkbox">
+                    <input type="checkbox" id="agreement" required>
+                    <label for="agreement">
+                        我已阅读并同意《用户服务协议》和《隐私政策》
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-submit">立即注册</button>
+                
+                <div class="auth-footer">
+                    <p>已有账号？<a href="/login">立即登录</a></p>
+                    <a href="/" class="link-home">返回首页</a>
+                </div>
+            </form>
+            
+            <!-- 装饰元素 -->
+            <div class="auth-decoration">
+                <div class="floating-icon" style="--index: 1;">🌿</div>
+                <div class="floating-icon" style="--index: 2;">🍃</div>
+                <div class="floating-icon" style="--index: 3;">☘️</div>
+                <div class="floating-icon" style="--index: 4;">🌱</div>
+            </div>
+        </div>
+        
+        <!-- 侧边装饰 -->
+        <div class="auth-sidebar">
+            <div class="sidebar-content">
+                <h3>为什么选择岐黄青年说？</h3>
+                <ul class="feature-list">
+                    <li>
+                        <span class="feature-icon">📚</span>
+                        <div>
+                            <strong>海量养生知识</strong>
+                            <p>涵盖传统功法、中医疗法、饮食养生等多个领域</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="feature-icon">🎯</span>
+                        <div>
+                            <strong>个性化推荐</strong>
+                            <p>根据您的体质和需求，智能推荐适合的养生方案</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="feature-icon">🌟</span>
+                        <div>
+                            <strong>专业权威</strong>
+                            <p>内容经过专业中医师审核，确保科学准确</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="feature-icon">👥</span>
+                        <div>
+                            <strong>社区互动</strong>
+                            <p>与志同道合的青年交流养生心得</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Flash消息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <script>
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorElement = document.getElementById('password-error');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                errorElement.textContent = '两次输入的密码不一致';
+                return false;
+            } else {
+                errorElement.textContent = '';
+                return true;
+            }
+        }
+        
+        document.querySelector('.auth-form').addEventListener('submit', function(e) {
+            if (!validatePassword()) {
+                e.preventDefault();
+                alert('请确保两次输入的密码一致');
+            }
+        });
+    </script>
+</body>
+</html>
