@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,timezone
 import json
 import random
 from functools import wraps
@@ -50,7 +50,7 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     knowledge_id = db.Column(db.Integer, db.ForeignKey('knowledge.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False)
 
 class SearchHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -207,7 +207,8 @@ def index():
                          knowledges=knowledges, 
                          popular=popular,
                          recommendations=recommendations,
-                         user_logged_in='user_id' in session)
+                         user_logged_in='user_id' in session,
+                         username=session.get('username'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -265,6 +266,40 @@ def logout():
     return redirect(url_for('index'))
 
 # API路由
+# 在 app.py 的 API 路由部分，添加这个新函数
+@app.route('/api/user/profile')
+@login_required
+def user_profile():
+    user_id = session['user_id']
+
+    # 1. 查询统计数据
+    favorite_count = Favorite.query.filter_by(user_id=user_id).count()
+    comment_count = Comment.query.filter_by(user_id=user_id).count()
+
+    # 2. 查询所有收藏的知识条目
+    favorites = Favorite.query.filter_by(user_id=user_id).order_by(Favorite.created_at.desc()).all()
+
+    # 3. 构建收藏列表
+    favorites_data = []
+    for fav in favorites:
+        knowledge = fav.knowledge
+        favorites_data.append({
+            'id': knowledge.id,
+            'title': knowledge.title,
+            'category': knowledge.category,
+            'content_preview': knowledge.content[:80] + '...' if len(knowledge.content) > 80 else knowledge.content
+        })
+
+    # 4. 返回JSON数据
+    return jsonify({
+        'username': session.get('username'),
+        'stats': {
+            'favorites': favorite_count,
+            'comments': comment_count
+        },
+        'favorites': favorites_data
+    })
+
 @app.route('/api/search')
 def search():
     keyword = request.args.get('q', '')
@@ -369,10 +404,13 @@ def add_comment(knowledge_id):
     if not content:
         return jsonify({'error': '评论内容不能为空'}), 400
     
+    beijing_tz = timezone(timedelta(hours=8))
+    
     comment = Comment(
         user_id=session['user_id'],
         knowledge_id=knowledge_id,
-        content=content
+        content=content,
+        created_at=datetime.now(beijing_tz)
     )
     db.session.add(comment)
     db.session.commit()

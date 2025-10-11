@@ -34,6 +34,9 @@ function setupEventListeners() {
         if (e.target === searchModal) {
             closeSearchModal();
         }
+        if (e.target === personalCenterModal) { // 新增
+        closePersonalCenterModal();
+        }
     });
 
     // 平滑滚动
@@ -49,6 +52,11 @@ function setupEventListeners() {
             }
         });
     });
+
+    const personalCenterBtn = document.getElementById('personalCenterBtn');
+    if (personalCenterBtn) {
+        personalCenterBtn.addEventListener('click', showPersonalCenter);
+    }
 }
 
 // 搜索功能
@@ -186,6 +194,73 @@ async function showKnowledgeDetail(id) {
     } catch (error) {
         console.error('获取知识详情失败:', error);
         showNotification('获取详情失败,请稍后重试', 'error');
+    }
+}
+// 新增函数：显示个人中心
+async function showPersonalCenter() {
+    const modal = document.getElementById('personalCenterModal');
+    const modalBody = document.getElementById('personalCenterBody');
+
+    modal.style.display = 'block';
+    modalBody.innerHTML = '<div class="loader"></div>'; // 显示加载动画
+
+    try {
+        const response = await fetch('/api/user/profile');
+
+        if (response.status === 401) {
+            // 如果未登录或会话过期，则提示并跳转
+            modal.style.display = 'none';
+            showNotification('请先登录', 'warning');
+            setTimeout(() => window.location.href = '/login', 1500);
+            return;
+        }
+
+        const data = await response.json();
+
+        let favoritesHtml = '<div class="favorites-grid">';
+        if (data.favorites.length > 0) {
+            data.favorites.forEach(item => {
+                favoritesHtml += `
+                    <div class="favorite-card" onclick="showKnowledgeDetail(${item.id}); closePersonalCenterModal();">
+                        <span class="category-badge">${item.category}</span>
+                        <h4>${item.title}</h4>
+                        <p>${item.content_preview}</p>
+                    </div>
+                `;
+            });
+        } else {
+            favoritesHtml += '<p>您还没有任何收藏哦，快去发现感兴趣的内容吧！</p>';
+        }
+        favoritesHtml += '</div>';
+
+        modalBody.innerHTML = `
+            <div class="personal-center-content">
+                <h3>${data.username}的个人中心</h3>
+                <div class="user-stats">
+                    <div class="stat-box">
+                        <span class="stat-number">${data.stats.favorites}</span>
+                        <span class="stat-label">我的收藏</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">${data.stats.comments}</span>
+                        <span class="stat-label">我的评论</span>
+                    </div>
+                </div>
+                <h4>我收藏的内容</h4>
+                ${favoritesHtml}
+            </div>
+        `;
+    } catch (error) {
+        console.error('获取个人中心数据失败:', error);
+        modalBody.innerHTML = '<p>加载失败，请稍后再试。</p>';
+    }
+}
+
+// 新增函数：关闭个人中心弹窗
+function closePersonalCenterModal() {
+    const modal = document.getElementById('personalCenterModal');
+    if (modal) {
+        modal.style.display = 'none';
     }
 }
 
@@ -482,6 +557,7 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeModal();
         closeSearchModal();
+        closePersonalCenterModal();
     }
 });
 

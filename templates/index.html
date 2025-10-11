@@ -21,17 +21,20 @@
                 <a href="#about" class="nav-link">关于我们</a>
             </div>
             <div class="nav-actions">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="搜索养生知识...">
-                    <button onclick="performSearch()">🔍</button>
-                </div>
-                {% if user_logged_in %}
-                    <a href="/logout" class="btn-logout">退出</a>
-                {% else %}
-                    <a href="/login" class="btn-login">登录</a>
-                    <a href="/register" class="btn-register">注册</a>
-                {% endif %}
-            </div>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="搜索养生知识...">
+        <button onclick="performSearch()">🔍</button>
+    </div>
+
+    {% if username %}
+        <span class="nav-welcome">欢迎, {{ username }}</span>
+        <button id="personalCenterBtn" class="btn-register">个人中心</button>
+        <a href="/logout" class="btn-logout">退出</a>
+    {% else %}
+        <a href="/login" class="btn-login">登录</a>
+        <a href="/register" class="btn-register">注册</a>
+    {% endif %}
+    </div>
         </div>
     </nav>
 
@@ -217,6 +220,14 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+
+    <div id="personalCenterModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePersonalCenterModal()">&times;</span>
+        <div id="personalCenterBody">
+            <div class="loader"></div> </div>
+    </div>
+</div>
 
     <script src="/static/script.js"></script>
 </body>

@@ -1143,3 +1143,118 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-color);
 }
+/* 导航栏欢迎语 */
+.nav-welcome {
+    color: white;
+    font-size: 0.9rem;
+    white-space: nowrap; /* 防止换行 */
+}
+
+/* 个人中心弹窗内容 */
+.personal-center-content h3 {
+    color: var(--primary-color);
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+}
+
+.personal-center-content h4 {
+    color: var(--text-dark);
+    margin-top: 30px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 10px;
+}
+
+/* 用户统计 */
+.user-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    background-color: var(--bg-cream);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.stat-box {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    color: var(--text-light);
+}
+
+/* 收藏列表 */
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.favorite-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.favorite-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.favorite-card .category-badge {
+    background: var(--accent-color);
+    color: var(--text-dark);
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.favorite-card h4 {
+    color: var(--primary-color);
+    margin: 0 0 10px 0;
+    padding: 0;
+    border: none;
+    font-size: 1.2rem;
+}
+
+.favorite-card p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* 1. 减小导航栏右侧各项之间的整体间距 */
+.nav-actions {
+    gap: 15px; /* 原来是 20px, 稍微减小一些 */
+}
+
+/* 2. 减小按钮的内部水平边距，让按钮变得更窄 */
+.nav-actions .btn-register,
+.nav-actions .btn-logout {
+    padding: 8px 15px; /* 原来是 8px 20px, 左右各减少5px */
+    white-space: nowrap; /* 强制按钮文字不换行 */
+}
+
+/* 3. 稍微缩短搜索框的默认宽度，释放空间 */
+.search-box input {
+    width: 180px; /* 原来是 200px */
+}
+
+/* 4. 调整欢迎语的样式，避免与按钮靠太近 */
+.nav-welcome {
+    /* 之前的样式已经可以，这里可以微调字体大小 */
+    font-size: 0.9rem; /* 如果还是拥挤可以尝试 0.85rem */
+}
