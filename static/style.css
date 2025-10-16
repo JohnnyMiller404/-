@@ -1258,3 +1258,264 @@ body {
     /* 之前的样式已经可以，这里可以微调字体大小 */
     font-size: 0.9rem; /* 如果还是拥挤可以尝试 0.85rem */
 }
+/* =================================== */
+/* 体质测试页面样式 (新增)             */
+/* =================================== */
+
+/* --- 首页入口 --- */
+.constitution-test-promo {
+    padding: 60px 0;
+    background: white;
+}
+.promo-box {
+    background: linear-gradient(135deg, var(--bg-cream), #fff);
+    border-radius: 20px;
+    padding: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--primary-color);
+}
+.promo-text h3 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+.promo-text p {
+    color: var(--text-light);
+    max-width: 600px;
+}
+.btn-promo {
+    padding: 15px 30px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+.btn-promo:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-hover);
+}
+
+/* --- 测试页面主体 --- */
+.test-container {
+    padding-top: 100px; /* 避开导航栏 */
+    padding-bottom: 60px;
+}
+.test-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.test-intro {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- 表单与题目 --- */
+.test-form {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+}
+.question-group {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed var(--border-color);
+}
+.question-group:last-of-type {
+    border-bottom: none;
+}
+.group-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+}
+.question-block {
+    margin-bottom: 20px;
+}
+.question-text {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+.options-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+.radio-label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+.radio-label input[type="radio"] {
+    display: none; /* 隐藏原始的radio按钮 */
+}
+.radio-label span {
+    color: var(--text-light);
+}
+.radio-label:hover {
+    background-color: var(--bg-cream);
+}
+.radio-label input[type="radio"]:checked + span {
+    font-weight: bold;
+}
+.radio-label input[type="radio"]:checked {
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.btn-submit-test {
+    display: block;
+    width: 250px;
+    margin: 40px auto 0;
+    padding: 15px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.btn-submit-test:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* --- 结果弹窗 --- */
+.result-content h4 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.result-list {
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+}
+.result-list li {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    background: var(--bg-cream);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.result-tip {
+    text-align: center;
+    margin-top: 30px;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .promo-box {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    .test-form {
+        padding: 20px;
+    }
+}
+/* =================================== */
+/* 体质测试页面最终简化版样式          */
+/* =================================== */
+
+/* 1. 为选中的选项添加黄色背景 */
+.radio-label.selected {
+    background-color: var(--accent-color); /* 黄色背景 */
+    border-color: var(--secondary-color);
+}
+
+.radio-label.selected span {
+    color: var(--text-dark);
+    font-weight: bold;
+}
+
+/* 2. 为性别专属问题添加一个标记，方便用户识别 */
+.gender-question::before {
+    content: '★';
+    color: var(--primary-color);
+    margin-right: 5px;
+    font-size: 1.2rem;
+}
+/* =================================== */
+/* 体质测试分页样式 (新增)             */
+/* =================================== */
+
+/* 默认隐藏所有问题组（页面） */
+.question-group {
+    display: none;
+    border-bottom: none; /* 移除分页间的横线 */
+    padding-bottom: 0;
+}
+
+/* 只显示当前激活的页面 */
+.question-group.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 进度条 */
+.progress-bar {
+    width: 100%;
+    background-color: #eee;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 10px;
+    background-color: var(--primary-color);
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+/* 分页导航按钮 */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.btn-nav {
+    padding: 12px 30px;
+    border: 2px solid var(--primary-color);
+    background-color: white;
+    color: var(--primary-color);
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-nav:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* 隐藏按钮的样式 */
+.btn-nav.hidden {
+    visibility: hidden;
+}

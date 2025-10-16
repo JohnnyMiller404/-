@@ -333,6 +333,95 @@ def search():
         } for k in results]
     })
 
+# ... (在 app.py 的其他路由后面, API路由前面)
+
+# 路由: 显示体质测试页面
+@app.route('/test')
+def constitution_test():
+    return render_template('test.html', username=session.get('username', None))
+
+# API路由: 处理体质测试提交
+# 在 app.py 中，替换这个函数
+
+@app.route('/api/submit_test', methods=['POST'])
+def submit_constitution_test():
+    answers = request.json
+    
+    # 定义题目信息 (题目ID -> 体质, 是否反向计分)
+    # 关键修复：为平和质的指定题目添加 True 标记
+    questions_map = {
+        # ... (其他体质不变, 都是 False)
+        'q_yangxu_1': ('yangxu', False), 'q_yangxu_2': ('yangxu', False), 'q_yangxu_3': ('yangxu', False),'q_yangxu_4': ('yangxu', False), 'q_yangxu_5': ('yangxu', False), 'q_yangxu_6': ('yangxu', False),
+        'q_yinxu_1': ('yinxu', False), 'q_yinxu_2': ('yinxu', False), 'q_yinxu_3': ('yinxu', False), 'q_yinxu_4': ('yinxu', False),'q_yinxu_5': ('yinxu', False), 'q_yinxu_6': ('yinxu', False), 'q_yinxu_7': ('yinxu', False),
+        'q_qixu_1': ('qixu', False), 'q_qixu_2': ('qixu', False), 'q_qixu_3': ('qixu', False), 'q_qixu_4': ('qixu', False),'q_qixu_5': ('qixu', False), 'q_qixu_6': ('qixu', False), 'q_qixu_7': ('qixu', False), 'q_qixu_8': ('qixu', False),
+        'q_tanshi_1': ('tanshi', False), 'q_tanshi_2': ('tanshi', False), 'q_tanshi_3': ('tanshi', False), 'q_tanshi_4': ('tanshi', False),'q_tanshi_5': ('tanshi', False), 'q_tanshi_6': ('tanshi', False), 'q_tanshi_7': ('tanshi', False), 'q_tanshi_8': ('tanshi', False),
+        'q_shire_1': ('shire', False), 'q_shire_2': ('shire', False), 'q_shire_3': ('shire', False), 'q_shire_4': ('shire', False),'q_shire_5': ('shire', False), 'q_shire_6': ('shire', False), 'q_shire_7': ('shire', False),
+        'q_xueyu_1': ('xueyu', False), 'q_xueyu_2': ('xueyu', False), 'q_xueyu_3': ('xueyu', False), 'q_xueyu_4': ('xueyu', False),'q_xueyu_5': ('xueyu', False), 'q_xueyu_6': ('xueyu', False), 'q_xueyu_7': ('xueyu', False),
+        'q_tebing_1': ('tebing', False), 'q_tebing_2': ('tebing', False), 'q_tebing_3': ('tebing', False), 'q_tebing_4': ('tebing', False),'q_tebing_5': ('tebing', False), 'q_tebing_6': ('tebing', False), 'q_tebing_7': ('tebing', False),
+        'q_qiyu_1': ('qiyu', False), 'q_qiyu_2': ('qiyu', False), 'q_qiyu_3': ('qiyu', False), 'q_qiyu_4': ('qiyu', False),'q_qiyu_5': ('qiyu', False), 'q_qiyu_6': ('qiyu', False), 'q_qiyu_7': ('qiyu', False),
+        
+        # 平和质题目，根据文档添加逆向计分标记
+        'q_pinghe_1': ('pinghe', False), 
+        'q_pinghe_2': ('pinghe', True),  # 逆向
+        'q_pinghe_3': ('pinghe', True),  # 逆向
+        'q_pinghe_4': ('pinghe', True),  # 逆向
+        'q_pinghe_5': ('pinghe', True),  # 逆向
+        'q_pinghe_6': ('pinghe', False),
+        'q_pinghe_7': ('pinghe', True),  # 逆向
+        'q_pinghe_8': ('pinghe', True)   # 逆向
+    }
+
+    raw_scores = {}
+    item_counts = {}
+
+    for q_id, value in answers.items():
+        if q_id in questions_map:
+            constitution, is_reversed = questions_map[q_id]
+            
+            # 初始化分数和计数器
+            raw_scores.setdefault(constitution, 0)
+            item_counts.setdefault(constitution, 0)
+
+            score = int(value)
+            if is_reversed:
+                score = 6 - score  # 逆向计分逻辑
+            
+            raw_scores[constitution] += score
+            item_counts[constitution] += 1
+
+    converted_scores = {}
+    for t, raw_score in raw_scores.items():
+        count = item_counts.get(t, 1) # 防止除零错误
+        converted_score = ((raw_score - count) / (count * 4)) * 100
+        converted_scores[t] = converted_score
+
+    results = []
+    constitution_names = { 'pinghe': '平和质', 'yangxu': '阳虚质', 'yinxu': '阴虚质', 'qixu': '气虚质', 'tanshi': '痰湿质', 'shire': '湿热质', 'xueyu': '血瘀质', 'tebing': '特禀质', 'qiyu': '气郁质' }
+    
+    pinghe_score = converted_scores.get('pinghe', 0)
+    other_scores = {k: v for k, v in converted_scores.items() if k != 'pinghe'}
+
+    is_pinghe = False
+    if pinghe_score >= 60:
+        if all(s < 30 for s in other_scores.values()):
+            results.append(f"是 {constitution_names['pinghe']}")
+            is_pinghe = True
+        elif all(s < 40 for s in other_scores.values()):
+            results.append(f"基本是 {constitution_names['pinghe']}")
+            is_pinghe = True
+
+    if not is_pinghe:
+        for t, score in other_scores.items():
+            if score >= 40:
+                results.append(f"是 {constitution_names[t]}")
+            elif 30 <= score < 40:
+                results.append(f"倾向是 {constitution_names[t]}")
+    
+    if not results:
+        results.append("您的体质类型不明显，趋于平和。")
+
+    return jsonify({'results': results})
+
 @app.route('/api/knowledge/<int:id>')
 def get_knowledge(id):
     knowledge = Knowledge.query.get_or_404(id)

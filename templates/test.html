@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体质辨识自测 - 岐黄青年说</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">☯</span>
+                <span class="logo-text">岐黄青年说</span>
+            </a>
+            <div class="nav-actions">
+                {% if username %}
+                    <span class="nav-welcome">欢迎, {{ username }}</span>
+                    <a href="/logout" class="btn-logout">退出</a>
+                {% else %}
+                    <a href="/login" class="btn-login">登录</a>
+                    <a href="/register" class="btn-register">注册</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="test-container container">
+        <div class="test-header">
+            <h1 class="section-title">
+                <span class="title-decorator">◈</span>
+                九大体质辨识自测
+                <span class="title-decorator">◈</span>
+            </h1>
+            <p class="test-intro">
+                请根据近一年的体验和感觉，回答所有问题。答案没有对错之分，请选择最符合您情况的选项。
+            </p>
+        </div>
+
+        <div class="progress-bar">
+            <div id="progressBarFill" class="progress-bar-fill"></div>
+        </div>
+
+        <form id="constitutionTestForm" class="test-form">
+            <div class="pagination-controls">
+                <button id="prevBtn" type="button" class="btn-nav">上一页</button>
+                <button id="nextBtn" type="button" class="btn-nav">下一页</button>
+                </div>
+        </form>
+
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>© 2024 岐黄青年说 - 让养生回归生活</p>
+        </div>
+    </footer>
+
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeResultModal()">&times;</span>
+            <div id="resultBody"></div>
+        </div>
+    </div>
+
+    <script src="/static/test.js"></script>
+</body>
+</html>
